@@ -203,7 +203,23 @@ const styles = {
         color: '#e53e3e',
         textAlign: 'center',
         padding: '2rem'
-    }
+    },
+    miniatura: {
+    width: '40px',
+    height: '40px',
+    objectFit: 'cover',
+    borderRadius: '4px'
+},
+miniaturaPlaceholder: {
+    width: '40px',
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+    borderRadius: '4px',
+    fontSize: '1rem'
+}
 }
 
 export default Pedidos
