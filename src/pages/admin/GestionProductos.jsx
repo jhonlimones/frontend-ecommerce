@@ -3,6 +3,7 @@
 // permite crear, editar, eliminar y subir imagenes de productos
 import { useState, useEffect } from 'react'
 import { obtenerProductos, crearProducto, actualizarProducto, eliminarProducto } from '../../services/productos.service'
+import { obtenerCategorias, crearCategoria } from '../../services/categorias.service'
 import api from '../../services/api'
 
 // formulario vacio por defecto
@@ -17,6 +18,7 @@ const formularioVacio = {
 
 const GestionProductos = () => {
     const [productos, setProductos] = useState([])
+    const [categorias, setCategorias] = useState([])
     const [formulario, setFormulario] = useState(formularioVacio)
     // null significa que estamos creando, un id significa que estamos editando
     const [editandoId, setEditandoId] = useState(null)
@@ -25,10 +27,7 @@ const GestionProductos = () => {
     const [mensaje, setMensaje] = useState(null)
     // archivo de imagen seleccionado para subir
     const [imagenFile, setImagenFile] = useState(null)
-
-    useEffect(() => {
-        cargarProductos()
-    }, [])
+    const [nuevaCategoria, setNuevaCategoria] = useState('')
 
     const cargarProductos = async () => {
         try {
@@ -40,6 +39,12 @@ const GestionProductos = () => {
             setCargando(false)
         }
     }
+
+    useEffect(() => {
+        Promise.all([cargarProductos(), obtenerCategorias()])
+            .then(([_, cats]) => setCategorias(cats))
+    }, [])
+
 
     // actualiza el formulario cuando el usuario escribe
     const handleCambio = (e) => {
@@ -126,6 +131,21 @@ const GestionProductos = () => {
         }
     }
 
+    const handleCrearCategoria = async () => {
+        if (!nuevaCategoria.trim()) return
+        try {
+            await crearCategoria(nuevaCategoria)
+            setNuevaCategoria('')
+            // recargamos categorias
+            const cats = await obtenerCategorias()
+            setCategorias(cats)
+            setMensaje('Categoría creada ✓')
+            setTimeout(() => setMensaje(null), 3000)
+        } catch (err) {
+            setError(err.response?.data?.detail || 'Error al crear categoría')
+        }
+    }
+
     if (cargando) return <p style={styles.centro}>Cargando productos...</p>
 
     return (
@@ -175,15 +195,18 @@ const GestionProductos = () => {
                         />
                     </div>
                     <div style={styles.campo}>
-                        <label style={styles.label}>Categoría ID</label>
-                        <input
+                        <label style={styles.label}>Categoría</label>
+                        <select
                             name="categoria_id"
-                            type="number"
                             value={formulario.categoria_id}
                             onChange={handleCambio}
                             style={styles.input}
-                            placeholder="1"
-                        />
+                        >
+                            <option value="">Selecciona categoría</option>
+                            {categorias.map(cat => (
+                                <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 
@@ -259,6 +282,29 @@ const GestionProductos = () => {
                         </div>
                     </div>
                 ))}
+            </div>
+            {/* seccion para crear nuevas categorias */}
+            <div style={{...styles.formulario, marginTop: '2rem'}}>
+                <h2 style={styles.subtitulo}>Gestión de Categorías</h2>
+                <div style={styles.categoriaRow}>
+                    <input
+                        value={nuevaCategoria}
+                        onChange={(e) => setNuevaCategoria(e.target.value)}
+                        style={{...styles.input, flex: 1}}
+                        placeholder="Nueva categoría (ej: Zapatos)"
+                    />
+                    <button onClick={handleCrearCategoria} style={styles.boton}>
+                        Crear Categoría
+                    </button>
+                </div>
+                {/* lista de categorias existentes */}
+                <div style={styles.categoriaLista}>
+                    {categorias.map(cat => (
+                        <span key={cat.id} style={styles.categoriaBadge}>
+                            {cat.nombre}
+                        </span>
+                    ))}
+                </div>
             </div>
         </div>
     )
@@ -409,6 +455,23 @@ const styles = {
     centro: {
         textAlign: 'center',
         padding: '2rem'
+    },
+    categoriaRow: {
+        display: 'flex',
+        gap: '1rem',
+        marginBottom: '1rem'
+    },
+    categoriaLista: {
+        display: 'flex',
+        gap: '0.5rem',
+        flexWrap: 'wrap'
+    },
+    categoriaBadge: {
+        backgroundColor: '#f0f0f0',
+        padding: '0.25rem 0.75rem',
+        borderRadius: '20px',
+        fontSize: '0.85rem',
+        color: '#444'
     }
 }
 
