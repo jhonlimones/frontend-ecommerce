@@ -85,7 +85,17 @@ const Pedidos = () => {
                                 ) : (
                                     pedido.detalles.map(detalle => (
                                         <div key={detalle.id} style={styles.detalle}>
-                                            <span>Producto #{detalle.producto_id}</span>
+                                            {/* imagen miniatura del producto */}
+                                            {detalle.producto?.imagen_url ? (
+                                                <img
+                                                    src={`http://localhost:8800${detalle.producto.imagen_url}`}
+                                                    alt={detalle.producto.nombre}
+                                                    style={styles.miniatura}
+                                                />
+                                            ) : (
+                                                <div style={styles.miniaturaPlaceholder}>📦</div>
+                                            )}
+                                            <span>{detalle.producto?.nombre || `Producto #${detalle.producto_id}`}</span>
                                             <span>x{detalle.cantidad}</span>
                                             <span>{detalle.subtotal}€</span>
                                         </div>
