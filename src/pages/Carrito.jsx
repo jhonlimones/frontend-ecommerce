@@ -101,11 +101,24 @@ const Carrito = () => {
                             style={styles.checkbox}
                         />
 
+                        {/* imagen miniatura del producto */}
+                        {item.producto?.imagen_url ? (
+                            <img
+                                src={`http://localhost:8800${item.producto.imagen_url}`}
+                                alt={item.producto.nombre}
+                                style={styles.miniatura}
+                            />
+                        ) : (
+                            <div style={styles.miniaturaPlaceholder}>📦</div>
+                        )}
+
                         <div style={styles.itemInfo}>
-                            <p style={styles.itemNombre}>Producto #{item.producto_id}</p>
+                            {/* nombre del producto en vez de Producto #id */}
+                            <p style={styles.itemNombre}>{item.producto?.nombre || `Producto #${item.producto_id}`}</p>
+                            <p style={styles.itemPrecio}>{item.producto?.precio}€ / unidad</p>
                         </div>
 
-                        {/* control de cantidad — si llega a 0 se elimina automaticamente */}
+                        {/* control de cantidad */}
                         <div style={styles.cantidad}>
                             <button
                                 onClick={() => actualizar(item.id, item.cantidad - 1)}
@@ -118,7 +131,6 @@ const Carrito = () => {
                             >+</button>
                         </div>
 
-                        {/* eliminar item del carrito */}
                         <button
                             onClick={() => eliminar(item.id)}
                             style={styles.btnEliminar}
@@ -255,7 +267,28 @@ const styles = {
     error: {
         color: '#e53e3e',
         marginBottom: '1rem'
-    }
+    },
+    miniatura: {
+    width: '60px',
+    height: '60px',
+    objectFit: 'cover',
+    borderRadius: '4px'
+},
+miniaturaPlaceholder: {
+    width: '60px',
+    height: '60px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+    borderRadius: '4px',
+    fontSize: '1.5rem'
+},
+itemPrecio: {
+    fontSize: '0.85rem',
+    color: '#2d6a4f',
+    margin: 0
+}
 }
 
 export default Carrito
