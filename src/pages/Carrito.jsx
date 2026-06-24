@@ -32,7 +32,7 @@ const Carrito = () => {
         try {
             const pedido = await confirmarPedido()
             // redirigimos al pago con el pedido_id
-            await handlePago(pedido.pedido_id)
+            await handlePago(pedido.pedido_id, pedido.total)
         } catch (err) {
             setError(err.response?.data?.detail || 'Error al confirmar el pedido')
         } finally {
@@ -50,7 +50,7 @@ const Carrito = () => {
         setError(null)
         try {
             const pedido = await confirmarPedidoSelectivo(seleccionados)
-            await handlePago(pedido.pedido_id)
+            await handlePago(pedido.pedido_id, pedido.total)
         } catch (err) {
             setError(err.response?.data?.detail || 'Error al confirmar el pedido')
         } finally {
@@ -60,11 +60,9 @@ const Carrito = () => {
 
     // crea el pago en stripe y redirige — por ahora mostramos el client_secret
     // cuando integremos Stripe.js completaremos el pago aqui
-    const handlePago = async (pedidoId) => {
-        const pago = await crearPago(pedidoId)
-        // de momento redirigimos al historial de pedidos
-        // cuando integremos Stripe.js procesaremos el pago aqui
-        navigate('/pedidos')
+    const handlePago = async (pedidoId, total) => {
+        // redirigimos a la pagina de pago con los datos del pedido
+        navigate('/pago', { state: { pedido_id: pedidoId, total } })
     }
 
     if (cargando) return <p style={styles.centro}>Cargando carrito...</p>
