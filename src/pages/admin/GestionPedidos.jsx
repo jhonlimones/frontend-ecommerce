@@ -119,7 +119,7 @@ const GestionPedidos = () => {
                             >
                                 <span style={styles.pedidoId}>Pedido #{pedido.id}</span>
                                 <span style={styles.fecha}>
-                                    Usuario #{pedido.usuario_id} · {new Date(pedido.fecha).toLocaleDateString('es-ES')}
+                                    👤 {pedido.usuario?.nombre} · {pedido.usuario?.email} · {new Date(pedido.fecha).toLocaleDateString('es-ES')}
                                 </span>
                             </div>
 
@@ -163,7 +163,7 @@ const GestionPedidos = () => {
                                 ) : (
                                     pedido.detalles.map(detalle => (
                                         <div key={detalle.id} style={styles.detalle}>
-                                            <span>Producto #{detalle.producto_id}</span>
+                                            <span>{detalle.producto?.nombre || `Producto #${detalle.producto_id}`}</span>
                                             <span>x{detalle.cantidad}</span>
                                             <span>{detalle.subtotal}€</span>
                                         </div>
