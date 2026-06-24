@@ -90,13 +90,14 @@ const GestionProductos = () => {
             }
 
             if (editandoId) {
-                // actualizamos el producto existente
                 await actualizarProducto(editandoId, datos)
+                // subimos la imagen si se seleccionó una nueva
+                if (imagenFile) {
+                    await subirImagen(editandoId, imagenFile)
+                }
                 setMensaje('Producto actualizado correctamente ✓')
             } else {
-                // creamos un nuevo producto
                 const nuevo = await crearProducto(datos)
-                // si hay imagen la subimos inmediatamente despues de crear
                 if (imagenFile) {
                     await subirImagen(nuevo.id, imagenFile)
                 }
@@ -224,20 +225,21 @@ const GestionProductos = () => {
                     <label htmlFor="en_stock" style={styles.label}>En stock</label>
                 </div>
 
-                {/* subida de imagen — solo al crear producto nuevo */}
+                {/* subida de imagen — disponible tanto al crear como al editar */}
+                <div style={styles.campo}>
+                    <label style={styles.label}>Imagen (opcional)</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setImagenFile(e.target.files[0])}
+                        style={styles.input}
+                    />
+                </div>
+
+                {/* checkbox de activo — solo visible al editar */}
                 {editandoId && (
                     <div style={styles.campoCheck}>
-                        <input
-                            name="activo"
-                            type="checkbox"
-                            checked={formulario.activo}
-                            onChange={handleCambio}
-                            id="activo"
-                        />
-                        <label htmlFor="activo" style={styles.label}>
-                            {/* mensaje dinamico segun el estado actual */}
-                            {formulario.activo ? '✅ Producto activo' : '❌ Producto inactivo'}
-                        </label>
+                        
                     </div>
                 )}
 
