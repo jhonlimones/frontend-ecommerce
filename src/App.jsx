@@ -10,6 +10,7 @@ import Registro from './pages/Registro'
 import Tienda from './pages/Tienda'
 import Carrito from './pages/Carrito'
 import Pedidos from './pages/Pedidos'
+import Pago from './pages/Pago'
 
 // paginas de admin
 import Dashboard from './pages/admin/Dashboard'
@@ -58,6 +59,12 @@ function App() {
                 <Route path="/pedidos" element={
                     <RutaPrivada>
                         <Pedidos />
+                    </RutaPrivada>
+                } />
+
+                <Route path="/pago" element={
+                    <RutaPrivada>
+                        <Pago />
                     </RutaPrivada>
                 } />
 
