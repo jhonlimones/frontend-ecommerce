@@ -13,7 +13,8 @@ const formularioVacio = {
     en_stock: true,
     stock: '',
     categoria_id: '',
-    imagen_url: null
+    imagen_url: null,
+    activo: true
 }
 
 const GestionProductos = () => {
@@ -31,8 +32,8 @@ const GestionProductos = () => {
 
     const cargarProductos = async () => {
         try {
-            const data = await obtenerProductos()
-            setProductos(data)
+            const response = await api.get('/producto/admin/todos')
+            setProductos(response.data)
         } catch {
             setError('Error al cargar productos')
         } finally {
@@ -65,7 +66,8 @@ const GestionProductos = () => {
             en_stock: producto.en_stock,
             stock: producto.stock,
             categoria_id: producto.categoria_id,
-            imagen_url: producto.imagen_url
+            imagen_url: producto.imagen_url,
+            activo: producto.activo
         })
     }
 
@@ -223,15 +225,19 @@ const GestionProductos = () => {
                 </div>
 
                 {/* subida de imagen — solo al crear producto nuevo */}
-                {!editandoId && (
-                    <div style={styles.campo}>
-                        <label style={styles.label}>Imagen (opcional)</label>
+                {editandoId && (
+                    <div style={styles.campoCheck}>
                         <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setImagenFile(e.target.files[0])}
-                            style={styles.input}
+                            name="activo"
+                            type="checkbox"
+                            checked={formulario.activo}
+                            onChange={handleCambio}
+                            id="activo"
                         />
+                        <label htmlFor="activo" style={styles.label}>
+                            {/* mensaje dinamico segun el estado actual */}
+                            {formulario.activo ? '✅ Producto activo' : '❌ Producto inactivo'}
+                        </label>
                     </div>
                 )}
 
@@ -267,18 +273,16 @@ const GestionProductos = () => {
                             <strong>{producto.nombre}</strong>
                             <span style={styles.filaDetalle}>
                                 {producto.precio}€ · Stock: {producto.stock} · {producto.en_stock ? '✅' : '❌'}
+                                {/* indicador de inactivo solo si lo esta */}
+                                {!producto.activo && <span style={styles.badgeInactivo}>inactivo</span>}
                             </span>
                         </div>
 
                         <div style={styles.filaAcciones}>
-                            <button
-                                onClick={() => handleEditar(producto)}
-                                style={styles.botonEditar}
-                            >Editar</button>
-                            <button
-                                onClick={() => handleEliminar(producto.id)}
-                                style={styles.botonEliminar}
-                            >Eliminar</button>
+                            {/* unico boton de editar — la activacion/desactivacion se hace desde el formulario */}
+                            <button onClick={() => handleEditar(producto)} style={styles.botonEditar}>
+                                Editar
+                            </button>
                         </div>
                     </div>
                 ))}
@@ -472,7 +476,15 @@ const styles = {
         borderRadius: '20px',
         fontSize: '0.85rem',
         color: '#444'
-    }
+    },
+    badgeInactivo: {
+    backgroundColor: '#fed7d7',
+    color: '#742a2a',
+    padding: '0.1rem 0.5rem',
+    borderRadius: '20px',
+    fontSize: '0.75rem',
+    marginLeft: '0.5rem'
+}
 }
 
 export default GestionProductos
