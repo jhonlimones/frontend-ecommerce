@@ -7,16 +7,15 @@ import { CarritoProvider } from './context/CarritoContext'
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
-    <StrictMode>
-        {/* BrowserRouter habilita la navegacion sin recarga de pagina */}
-        <BrowserRouter>
-            {/* AuthProvider debe ir primero porque CarritoProvider lo necesita */}
-            <AuthProvider>
-                {/* CarritoProvider envuelve la app para que el carrito este disponible en todos los componentes */}
-                <CarritoProvider>
-                    <App />
-                </CarritoProvider>
-            </AuthProvider>
-        </BrowserRouter>
-    </StrictMode>
+    // eliminamos StrictMode para evitar doble montaje en desarrollo
+    // {/* BrowserRouter habilita la navegacion sin recarga de pagina */}
+    <BrowserRouter>
+        {/* AuthProvider debe ir primero porque CarritoProvider lo necesita */}
+        <AuthProvider>
+            {/* CarritoProvider envuelve la app para que el carrito este disponible en todos los componentes */}
+            <CarritoProvider>
+                <App />
+            </CarritoProvider>
+        </AuthProvider>
+    </BrowserRouter>
 )
